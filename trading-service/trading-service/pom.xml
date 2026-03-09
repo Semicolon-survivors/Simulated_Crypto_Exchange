@@ -16,6 +16,8 @@
         <postgres.version>42.7.4</postgres.version>
         <lombok.version>1.18.32</lombok.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
