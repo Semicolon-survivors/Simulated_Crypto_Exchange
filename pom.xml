@@ -13,8 +13,8 @@
 
     <modules>
         <module>trading-service/trading-service</module>
-    </modules>
 
+    </modules>
     <properties>
         <java.version>17</java.version>
     </properties>

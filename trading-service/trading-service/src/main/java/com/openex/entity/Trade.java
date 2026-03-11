@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
 @Table(name = "trades")
 @Data
 @NoArgsConstructor
