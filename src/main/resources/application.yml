@@ -1,0 +1,13 @@
+spring:
+  main:
+    banner-mode: "off"
+
+logging:
+  level:
+    root: INFO
+
+app:
+  demo:
+    initial-deposits:
+      usd: 10000
+      btc: 1.0
