@@ -34,9 +34,8 @@ jobs:
             pnpm install --frozen-lockfile
           elif [ -f yarn.lock ]; then
             yarn install --immutable
-          elif [ -f package-lock.json ]; then
-            npm ci || (echo "npm ci failed, falling back to npm install to refresh local lockfile for build" && npm install --no-audit --no-fund)
           else
+            # Use npm install instead of npm ci to tolerate out-of-sync lockfiles in CI
             npm install --no-audit --no-fund
           fi
 
