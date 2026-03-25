@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+
+scrape_configs:
+  - job_name: "openex"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      # On Docker Desktop, host.docker.internal resolves to the host.
+      # On Linux, replace with your host IP or run the app in this compose network.
+      - targets: ["host.docker.internal:8080"]

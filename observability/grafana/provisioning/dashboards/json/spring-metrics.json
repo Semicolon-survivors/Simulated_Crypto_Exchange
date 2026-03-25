@@ -1,0 +1,81 @@
+{
+  "id": null,
+  "uid": "openex-spring-metrics",
+  "title": "OpenEx - Spring Metrics",
+  "timezone": "browser",
+  "version": 1,
+  "schemaVersion": 38,
+  "refresh": "10s",
+  "tags": ["spring", "micrometer", "prometheus"],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Uptime",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "process_uptime_seconds", "legendFormat": "uptime", "refId": "A" }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Server Requests (RPS)",
+      "gridPos": { "x": 6, "y": 0, "w": 18, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{uri!~\".*actuator.*\"}[1m]))",
+          "legendFormat": "rps",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Latency (p95)",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{uri!~\".*actuator.*\"}[5m])) by (le))",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "JVM Memory Used",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(jvm_memory_used_bytes{area=\"heap\"})",
+          "legendFormat": "heap",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(jvm_memory_used_bytes{area=\"nonheap\"})",
+          "legendFormat": "non-heap",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "System CPU",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "system_cpu_usage", "legendFormat": "system", "refId": "A" },
+        { "expr": "process_cpu_usage", "legendFormat": "process", "refId": "B" }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "JVM Threads",
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "jvm_threads_live_threads", "legendFormat": "live", "refId": "A" },
+        { "expr": "jvm_threads_daemon_threads", "legendFormat": "daemon", "refId": "B" }
+      ]
+    }
+  ],
+  "templating": { "list": [] }
+}

@@ -1,0 +1,100 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: openex-postgres
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    networks:
+      - openex
+
+  redis:
+    image: redis:7-alpine
+    container_name: openex-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "6379:6379"
+    networks:
+      - openex
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openex-backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Database
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_SSL: "false"
+      # OpenTelemetry (optional; set to your collector if running)
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      # Market data (can override)
+      # MARKET_WS_URL: wss://stream.binance.com:9443/ws/btcusdt@trade
+      # Spring tuning
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+    ports:
+      - "8080:8080"
+    networks:
+      - openex
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: openex-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - openex
+
+  # Optional: OpenTelemetry Collector to receive traces/metrics/logs
+  otel-collector:
+    image: otel/opentelemetry-collector:0.98.0
+    container_name: openex-otel-collector
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./observability/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+    networks:
+      - openex
+
+volumes:
+  dbdata:
+
+networks:
+  openex:
+    driver: bridge
