@@ -187,29 +187,6 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- Generate Postman collection from the OpenAPI spec -->
-      <plugin>
-        <groupId>org.openapitools</groupId>
-        <artifactId>openapi-generator-maven-plugin</artifactId>
-        <version>7.5.0</version>
-        <executions>
-          <execution>
-            <id>generate-postman</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>${project.build.directory}/openapi.json</inputSpec>
-              <generatorName>postman</generatorName>
-              <output>${project.build.directory}/postman</output>
-              <configOptions>
-                <projectName>OpenEx API</projectName>
-              </configOptions>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 
       <!-- Run *IT integration tests in the verify phase -->
       <plugin>
@@ -234,4 +211,43 @@
 
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>postman</id>
+      <activation>
+        <property>
+          <name>generatePostman</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- Generate Postman collection from the OpenAPI spec (opt-in) -->
+          <plugin>
+            <groupId>org.openapitools</groupId>
+            <artifactId>openapi-generator-maven-plugin</artifactId>
+            <version>7.5.0</version>
+            <executions>
+              <execution>
+                <id>generate-postman</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+                <configuration>
+                  <inputSpec>${project.build.directory}/openapi.json</inputSpec>
+                  <generatorName>postman</generatorName>
+                  <output>${project.build.directory}/postman</output>
+                  <configOptions>
+                    <projectName>OpenEx API</projectName>
+                  </configOptions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
