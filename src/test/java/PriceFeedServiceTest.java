@@ -37,7 +37,7 @@ class PriceFeedServiceTest {
         onText.setAccessible(true);
 
         WebSocket ws = Mockito.mock(WebSocket.class);
-        Mockito.doReturn(ws).when(ws).request(anyLong());
+        Mockito.doNothing().when(ws).request(Mockito.anyLong());
 
         String binanceTradeJson = """
                 {"e":"trade","E":170000,"p":"123.45","q":"0.01"}

@@ -112,12 +112,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- JDBC driver for PostgreSQL (needed for JDBC checks in tests) -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <!-- Jackson Databind for JSON handling -->
     <dependency>
