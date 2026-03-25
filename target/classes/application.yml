@@ -1,0 +1,74 @@
+spring:
+  main:
+    banner-mode: "off"
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:app}
+    username: ${POSTGRES_USER:app}
+    password: ${POSTGRES_PASSWORD:app}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      pool-name: appHikariPool
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    ssl: ${REDIS_SSL:false}
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000        # 10 minutes in milliseconds
+      cache-null-values: false
+
+app:
+  market:
+    # External market WebSocket URL (override via MARKET_WS_URL)
+    # Default subscribes to Binance BTC/USDT trades
+    ws-url: ${MARKET_WS_URL:wss://stream.binance.com:9443/ws/btcusdt@trade}
+  demo:
+    initial-deposits:
+      usd: 10000
+      btc: 1.0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      # Default to local collector; override with OTEL_EXPORTER_OTLP_ENDPOINT
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4317}
+
+# You can override via environment variables when running:
+# POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
+# REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, REDIS_SSL
+# MARKET_WS_URL
+# OTEL_EXPORTER_OTLP_ENDPOINT
+logging:
+  level:
+    root: INFO
